@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, ExternalLink } from "lucide-react";
 
 export default function SearchView({ docs }: { docs: StandardDoc[] }) {
     const [query, setQuery] = useState("");
@@ -51,10 +51,12 @@ export default function SearchView({ docs }: { docs: StandardDoc[] }) {
                         <CardFooter className="flex gap-2 pt-0">
                             <Button asChild variant="default" className="w-full">
                                 {/* 내부 상세 페이지로 이동 */}
-                                <Link href={`/docs/${doc.slug}`}>내 정리 보기 📝</Link>
+                                <Link href={`/docs/${doc.slug}`}>내 정리 보기</Link>
                             </Button>
                             <Button asChild variant="outline" size="icon" title="공식 문서 보기">
-                                <Link href={doc.link} target="_blank" rel="noopener noreferrer">↗</Link>
+                                <Link href={doc.link} target="_blank" rel="noopener noreferrer">
+                                    <ExternalLink className="h-4 w-4" />
+                                </Link>
                             </Button>
                         </CardFooter>
                     </Card>
