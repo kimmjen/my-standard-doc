@@ -3,7 +3,7 @@ export type StandardDoc = {
   slug: string; // URL 경로용 (예: rfc-6749)
   code: string;
   title: string;
-  category: "Network" | "Web" | "Auth" | "Language" | "Infra";
+  category: "Network" | "Web" | "Auth" | "Language" | "Infra" | "Security";
   summary: string;
   link: string; // 공식 원문 링크
 };
@@ -62,5 +62,14 @@ export const standards: StandardDoc[] = [
     category: "Network",
     summary: "사설 IP 주소 대역(10.x, 192.168.x)의 정의와 사용 이유.",
     link: "https://datatracker.ietf.org/doc/html/rfc1918",
+  },
+  {
+    id: "7",
+    slug: "cve-2025-66478",
+    code: "CVE-2025-66478",
+    title: "Critical RCE in Next.js & React",
+    category: "Security",
+    summary: "Next.js App Router와 React Server Components에서 발견된 치명적 원격 코드 실행 취약점.",
+    link: "https://nextjs.org/blog/security-2025-02-04",
   },
 ];
