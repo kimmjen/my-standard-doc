@@ -49,11 +49,11 @@ export default function SearchView({ docs }: { docs: StandardDoc[] }) {
                             </p>
                         </CardContent>
                         <CardFooter className="flex gap-2 pt-0">
-                            <Button asChild variant="default" className="w-full">
+                            <Button asChild variant="default" className="flex-1">
                                 {/* 내부 상세 페이지로 이동 */}
                                 <Link href={`/docs/${doc.slug}`}>내 정리 보기</Link>
                             </Button>
-                            <Button asChild variant="outline" size="icon" title="공식 문서 보기">
+                            <Button asChild variant="outline" size="icon" className="shrink-0" title="공식 문서 보기">
                                 <Link href={doc.link} target="_blank" rel="noopener noreferrer">
                                     <ExternalLink className="h-4 w-4" />
                                 </Link>

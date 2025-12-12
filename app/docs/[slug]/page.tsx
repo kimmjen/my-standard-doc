@@ -18,8 +18,8 @@ export async function generateStaticParams() {
     }));
 }
 
-export default async function DocDetail({ params }: { params: { slug: string } }) {
-    const { slug } = params;
+export default async function DocDetail({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
     const filePath = path.join(process.cwd(), "content", `${slug}.mdx`);
 
     if (!fs.existsSync(filePath)) {
