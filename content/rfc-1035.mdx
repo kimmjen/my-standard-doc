@@ -1,0 +1,39 @@
+---
+title: "Domain Names - Implementation (RFC 1035)"
+date: "1987-11-01"
+---
+
+# DNS (Domain Name System)
+
+[RFC 1035](https://datatracker.ietf.org/doc/html/rfc1035)는 사람이 읽을 수 있는 도메인 이름(예: `google.com`)을 컴퓨터가 이해하는 IP 주소(예: `142.250.x.x`)로 변환해주는 시스템입니다.
+
+---
+
+## 1. 동작 원리 (The Resolution Process)
+
+브라우저 주소창에 `www.example.com`을 입력하면 다음과 같은 일이 벌어집니다.
+
+1.  **Local Cache 확인**: 브라우저나 OS가 이미 IP를 알고 있는지 봅니다.
+2.  **Recursive Resolver 요청**: (보통 통신사 DNS) "이 주소 IP 아시는 분?" 하고 묻습니다.
+3.  **Root Server (.)**: "나는 몰라. 하지만 `.com` 관리하는 애는 알아." -> `.com` 서버 주소 알려줌.
+4.  **TLD Server (.com)**: "나는 몰라. 하지만 `example.com` 관리하는 애는 알아." -> `example.com` 네임서버 주소 알려줌.
+5.  **Authoritative Server**: "그거 내 관할이야! IP는 `93.184.216.34`야." -> 최종 정답 반환.
+
+---
+
+## 2. 주요 레코드 타입
+
+AWS Route53이나 가비아 같은 도메인 관리 사이트에서 보게 되는 설정들입니다.
+
+*   **A (Address)**: 도메인을 **IPv4 주소**와 연결합니다. (가장 기본)
+*   **AAAA**: 도메인을 **IPv6 주소**와 연결합니다.
+*   **CNAME (Canonical Name)**: 도메인의 **별명**을 만듭니다. (예: `blog.site.com` -> `site.github.io`)
+*   **NS (Name Server)**: 이 도메인을 관리하는 **네임서버**를 지정합니다.
+*   **MX (Mail Exchange)**: 이메일을 받을 **메일 서버**를 지정합니다.
+
+---
+
+## 3. TTL (Time To Live)
+*   DNS 레코드가 캐시 서버에 저장되는 **시간(초)**입니다.
+*   TTL이 너무 길면, 서버 IP를 바꿨을 때 반영되는 데 오래 걸립니다.
+*   TTL이 너무 짧으면, DNS 조회가 너무 자주 일어나 접속이 느려질 수 있습니다.
