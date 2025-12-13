@@ -1,0 +1,82 @@
+---
+title: "Problem Details for HTTP APIs (RFC 7807)"
+date: "2016-03-01"
+---
+
+# Problem Details for HTTP APIs
+
+[RFC 7807](https://datatracker.ietf.org/doc/html/rfc7807)은 HTTP API에서 **에러 응답을 표준화된 JSON 형식**으로 반환하는 방법을 정의합니다.
+API 개발 시 일관된 에러 처리를 위한 필수 표준입니다.
+
+---
+
+## 1. 왜 필요한가?
+
+### 기존 문제점
+```json
+// 팀마다, 회사마다 다른 에러 형식
+{ "error": "Not found" }
+{ "code": 404, "msg": "리소스 없음" }
+{ "success": false, "reason": "..." }
+```
+
+### RFC 7807 적용 후
+모든 API가 **동일한 구조**로 에러를 반환합니다. 클라이언트 개발자가 예측 가능한 에러 처리를 할 수 있습니다.
+
+---
+
+## 2. 표준 에러 형식
+
+```json
+{
+  "type": "https://example.com/problems/out-of-credit",
+  "title": "잔액이 부족합니다",
+  "status": 403,
+  "detail": "현재 잔액은 30원이지만, 요청 금액은 50원입니다.",
+  "instance": "/account/12345/transactions/abc"
+}
+```
+
+### 필드 설명
+
+| 필드 | 필수 | 설명 |
+|------|------|------|
+| `type` | ✅ | 문제 유형을 식별하는 URI (문서 링크 가능) |
+| `title` | ✅ | 사람이 읽을 수 있는 짧은 요약 |
+| `status` | ❌ | HTTP 상태 코드 (응답 헤더와 동일) |
+| `detail` | ❌ | 문제에 대한 상세 설명 |
+| `instance` | ❌ | 문제가 발생한 특정 리소스 URI |
+
+---
+
+## 3. 실무 적용 예시
+
+### Spring Boot
+```java
+@ExceptionHandler(InsufficientBalanceException.class)
+public ProblemDetail handleInsufficientBalance(InsufficientBalanceException ex) {
+    ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+    problem.setType(URI.create("https://api.example.com/errors/insufficient-balance"));
+    problem.setTitle("잔액 부족");
+    problem.setDetail(ex.getMessage());
+    return problem;
+}
+```
+
+### Express.js
+```javascript
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    type: `https://api.example.com/errors/${err.code}`,
+    title: err.title,
+    status: err.status,
+    detail: err.message,
+    instance: req.originalUrl
+  });
+});
+```
+
+---
+
+> [!TIP]
+> **Content-Type**: 이 형식을 사용할 때는 `application/problem+json` 미디어 타입을 사용하는 것이 표준입니다.

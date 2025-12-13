@@ -1,0 +1,129 @@
+---
+title: "HTTP/2 (RFC 7540)"
+date: "2015-05-01"
+---
+
+# HTTP/2
+
+[RFC 7540](https://datatracker.ietf.org/doc/html/rfc7540)은 HTTP/1.1의 성능 한계를 극복하기 위한 **차세대 HTTP 프로토콜**입니다.
+현재 대부분의 웹사이트가 HTTP/2를 사용하고 있습니다.
+
+---
+
+## 1. HTTP/1.1의 문제점
+
+### Head-of-Line Blocking
+```
+HTTP/1.1: 하나의 커넥션에서 순차 처리
+
+요청1 ──────────▶ 응답1
+                   요청2 ──────────▶ 응답2
+                                      요청3 ──────────▶ 응답3
+
+👎 앞 요청이 느리면 뒤가 모두 대기
+```
+
+### 해결 시도 (HTTP/1.1)
+- 도메인당 6~8개 커넥션 열기 → 서버 리소스 낭비
+- 이미지 스프라이트, CSS/JS 번들링 → 개발 복잡도 증가
+
+---
+
+## 2. HTTP/2의 해결책
+
+### 멀티플렉싱 (Multiplexing)
+```
+HTTP/2: 하나의 커넥션에서 동시 처리
+
+요청1 ─▶   ┌─────────────────┐
+요청2 ─▶   │  하나의 커넥션   │   ─▶ 응답2
+요청3 ─▶   └─────────────────┘   ─▶ 응답1
+                                  ─▶ 응답3
+
+👍 순서 상관없이 먼저 완료된 것부터 응답
+```
+
+### 주요 특징
+
+| 기능 | 설명 |
+|------|------|
+| **Binary Framing** | 텍스트 → 바이너리로 파싱 효율 향상 |
+| **Stream** | 각 요청/응답이 독립적인 스트림 |
+| **Header Compression** | HPACK으로 헤더 압축 (중복 제거) |
+| **Server Push** | 요청 전에 서버가 먼저 리소스 전송 가능 |
+
+---
+
+## 3. 성능 개선 포인트
+
+### Header Compression (HPACK)
+
+```
+HTTP/1.1 (매 요청마다 동일 헤더 전송)
+GET /page1 HTTP/1.1
+Host: example.com
+User-Agent: Mozilla/5.0...
+Cookie: session=abc123...
+
+GET /page2 HTTP/1.1
+Host: example.com           ← 중복!
+User-Agent: Mozilla/5.0...  ← 중복!
+Cookie: session=abc123...   ← 중복!
+```
+
+```
+HTTP/2 (헤더 테이블로 인덱싱)
+첫 요청: 전체 헤더 전송 + 테이블 저장
+이후: "테이블 인덱스 3번 사용" ← 몇 바이트로 끝
+```
+
+### Server Push
+
+```
+클라이언트: GET /index.html
+
+서버: 
+  1. index.html 응답
+  2. (요청 없이) style.css PUSH
+  3. (요청 없이) app.js PUSH
+
+결과: 추가 요청 없이 필요한 리소스 미리 전송
+```
+
+---
+
+## 4. 적용 방법
+
+### Nginx 설정
+```nginx
+server {
+    listen 443 ssl http2;
+    
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+}
+```
+
+### 확인 방법
+```bash
+curl -I --http2 https://example.com
+
+# 응답 헤더에서 확인
+HTTP/2 200
+```
+
+---
+
+## 5. HTTP/2 vs HTTP/3
+
+| | HTTP/2 | HTTP/3 |
+|------|--------|--------|
+| 전송 계층 | TCP | QUIC (UDP 기반) |
+| 암호화 | TLS 선택 | TLS 필수 (내장) |
+| HOL Blocking | TCP 레벨에서 발생 | 완전 해결 |
+
+---
+
+> [!NOTE]
+> **HTTP/2 필수 조건**  
+> 대부분의 브라우저는 HTTPS에서만 HTTP/2를 지원합니다. HTTP/2 적용 = SSL 인증서 필수입니다.

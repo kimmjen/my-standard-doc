@@ -1,0 +1,179 @@
+---
+title: "The Twelve-Factor App"
+date: "2012-01-01"
+---
+
+# The Twelve-Factor App
+
+[12 Factor App](https://12factor.net/)은 **클라우드 네이티브 애플리케이션**을 설계하기 위한 12가지 원칙입니다.
+Heroku 개발자들이 정리한 이 방법론은 Docker, Kubernetes 시대에 더욱 중요해졌습니다.
+
+---
+
+## 1. Codebase (코드베이스)
+
+> **하나의 코드베이스, 여러 배포**
+
+```
+❌ 개발용 코드와 운영용 코드가 다른 레포에 있음
+✅ 하나의 Git 레포에서 dev/staging/prod 모두 배포
+```
+
+---
+
+## 2. Dependencies (의존성)
+
+> **명시적으로 선언하고 격리**
+
+```json
+// package.json - 모든 의존성 명시
+{
+  "dependencies": {
+    "express": "^4.18.0"
+  }
+}
+```
+```
+❌ "내 PC에는 설치되어 있어서 동작함"
+✅ npm install로 누구나 동일한 환경 구성
+```
+
+---
+
+## 3. Config (설정)
+
+> **환경 변수에 저장**
+
+```javascript
+// ❌ 하드코딩
+const DB_URL = "postgres://prod-server:5432/mydb";
+
+// ✅ 환경 변수
+const DB_URL = process.env.DATABASE_URL;
+```
+
+---
+
+## 4. Backing Services (지원 서비스)
+
+> **연결된 리소스로 취급**
+
+```
+DB, Redis, S3 등은 URL로 연결
+→ 로컬 PostgreSQL → AWS RDS로 변경해도 코드 수정 없음
+```
+
+---
+
+## 5. Build, Release, Run (빌드/릴리스/실행)
+
+> **단계를 엄격히 분리**
+
+```
+Build  → npm run build (코드 → 실행 파일)
+Release → Build + Config (배포 가능 상태)
+Run    → 실행 (docker run, pm2 start)
+```
+
+---
+
+## 6. Processes (프로세스)
+
+> **무상태(Stateless)로 실행**
+
+```javascript
+// ❌ 메모리에 세션 저장
+const sessions = {};
+
+// ✅ Redis 같은 외부 저장소 사용
+const session = await redis.get(sessionId);
+```
+
+---
+
+## 7. Port Binding (포트 바인딩)
+
+> **포트를 통해 서비스 노출**
+
+```javascript
+// 자체적으로 포트를 열고 HTTP 서비스
+const PORT = process.env.PORT || 3000;
+app.listen(PORT);
+```
+Nginx, Apache 없이 앱 자체가 웹 서버 역할
+
+---
+
+## 8. Concurrency (동시성)
+
+> **프로세스 모델로 확장**
+
+```
+웹 요청 처리 → web 프로세스 × 4
+백그라운드 작업 → worker 프로세스 × 2
+
+scale up(수직) 보다 scale out(수평) 선호
+```
+
+---
+
+## 9. Disposability (폐기 가능성)
+
+> **빠른 시작과 안전한 종료**
+
+```javascript
+// Graceful Shutdown
+process.on('SIGTERM', async () => {
+  await server.close();      // 새 요청 거부
+  await db.disconnect();     // DB 연결 정리
+  process.exit(0);
+});
+```
+
+---
+
+## 10. Dev/Prod Parity (개발-운영 일치)
+
+> **환경 차이를 최소화**
+
+```yaml
+# docker-compose.yml - 로컬에서도 동일한 스택
+services:
+  app:
+    image: myapp:latest
+  db:
+    image: postgres:15
+  redis:
+    image: redis:7
+```
+
+---
+
+## 11. Logs (로그)
+
+> **이벤트 스트림으로 취급**
+
+```javascript
+// ❌ 파일에 직접 쓰기
+fs.appendFileSync('app.log', message);
+
+// ✅ stdout으로 출력 → 플랫폼이 수집
+console.log(JSON.stringify({ level: 'info', message }));
+```
+
+---
+
+## 12. Admin Processes (관리 프로세스)
+
+> **일회성 관리 작업도 동일 환경에서**
+
+```bash
+# 마이그레이션도 같은 환경에서 실행
+docker exec myapp npm run migrate
+```
+
+---
+
+> [!TIP]
+> **현대적 적용**  
+> 12 Factor는 2012년에 작성되었지만, Kubernetes, Serverless 환경에서도 여전히 유효합니다. 특히 3(Config), 6(Stateless), 9(Disposability)는 컨테이너 시대의 필수 원칙입니다.

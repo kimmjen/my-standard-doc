@@ -1,0 +1,116 @@
+---
+title: "Semantic Versioning 2.0"
+date: "2013-06-01"
+---
+
+# Semantic Versioning (SemVer)
+
+[Semantic Versioning 2.0](https://semver.org/)은 소프트웨어 버전 번호를 **의미 있게 부여하는 규칙**입니다.
+npm, Maven, pip 등 대부분의 패키지 매니저가 이 규칙을 따릅니다.
+
+---
+
+## 1. 버전 형식
+
+```
+MAJOR.MINOR.PATCH
+
+예: 2.4.1
+    │ │ └── 버그 수정 (하위 호환)
+    │ └──── 기능 추가 (하위 호환)
+    └────── 호환성 깨지는 변경
+```
+
+---
+
+## 2. 버전 올리는 규칙
+
+### PATCH (예: 1.0.0 → 1.0.1)
+**언제?** 버그 수정, 내부 개선 (기존 기능 동작 유지)
+
+```javascript
+// Before: 버그
+function add(a, b) { return a - b; }
+
+// After: 수정
+function add(a, b) { return a + b; }
+```
+
+### MINOR (예: 1.0.0 → 1.1.0)
+**언제?** 새 기능 추가 (기존 기능 여전히 동작)
+
+```javascript
+// 기존 기능 유지 + 새 옵션 추가
+function greet(name, options = {}) {
+  const greeting = options.formal ? "Hello" : "Hi";
+  return `${greeting}, ${name}`;
+}
+```
+
+### MAJOR (예: 1.0.0 → 2.0.0)
+**언제?** 기존 코드가 깨질 수 있는 변경
+
+```javascript
+// Before (v1)
+function fetch(url, callback) { ... }
+
+// After (v2) - 콜백 → Promise로 변경
+async function fetch(url) { ... }
+```
+
+---
+
+## 3. Pre-release & Build Metadata
+
+```
+1.0.0-alpha      ← 알파 버전
+1.0.0-beta.2     ← 베타 2번째
+1.0.0-rc.1       ← Release Candidate
+1.0.0+20231225   ← 빌드 메타데이터 (비교 시 무시)
+```
+
+### 버전 우선순위
+```
+1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-beta < 1.0.0-rc.1 < 1.0.0
+```
+
+---
+
+## 4. 패키지 매니저에서의 활용
+
+### npm (package.json)
+```json
+{
+  "dependencies": {
+    "lodash": "^4.17.0",
+    "express": "~4.18.0",
+    "react": "18.2.0"
+  }
+}
+```
+
+| 기호 | 의미 | 예시 |
+|------|------|------|
+| `^` | MINOR까지 자동 업데이트 | `^4.17.0` → 4.x.x |
+| `~` | PATCH만 자동 업데이트 | `~4.18.0` → 4.18.x |
+| 없음 | 정확히 해당 버전 | `18.2.0` |
+
+---
+
+## 5. 실무 팁
+
+### 0.x.x는 불안정
+```
+0.y.z 버전에서는 어떤 변경이든 발생할 수 있습니다.
+아직 정식 릴리스 전 = "마음대로 바꿀 수 있음"
+```
+
+### 1.0.0은 약속
+```
+1.0.0을 릴리스했다면 = "이제 호환성을 지키겠다"는 선언
+```
+
+---
+
+> [!TIP]
+> **Breaking Change가 작아도** 기존 사용자 코드가 깨지면 MAJOR를 올려야 합니다. "별거 아닌 것 같아서 MINOR로 올렸는데 전 세계에서 빌드 실패" 같은 사고가 발생합니다.

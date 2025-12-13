@@ -1,0 +1,128 @@
+---
+title: "OpenAPI Specification 3.1"
+date: "2021-02-15"
+---
+
+# OpenAPI Specification
+
+[OpenAPI 3.1](https://spec.openapis.org/oas/latest.html)은 REST API를 **표준화된 형식으로 문서화**하는 명세입니다.
+흔히 "Swagger"로 알려진 도구들이 이 표준을 기반으로 동작합니다.
+
+---
+
+## 1. 왜 필요한가?
+
+### 문서화의 고통
+- "이 API 파라미터가 뭐였지?" (슬랙 검색)
+- "응답 형식이 바뀌었는데 문서 업데이트 안 됨"
+- "API 테스트하려면 Postman 설정부터..."
+
+### OpenAPI의 해결책
+**하나의 YAML/JSON 파일**로 API를 정의하면:
+- 📖 자동으로 예쁜 문서 생성 (Swagger UI)
+- 🧪 바로 API 테스트 가능
+- 🔧 클라이언트 SDK 자동 생성
+- ✅ 요청/응답 유효성 검증
+
+---
+
+## 2. 기본 구조
+
+```yaml
+openapi: 3.1.0
+info:
+  title: 사용자 관리 API
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com/v1
+
+paths:
+  /users:
+    get:
+      summary: 사용자 목록 조회
+      responses:
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+```
+
+---
+
+## 3. 핵심 요소
+
+### Paths (경로)
+API 엔드포인트와 HTTP 메서드 정의
+
+```yaml
+paths:
+  /users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+```
+
+### Components (재사용 가능한 스키마)
+반복되는 구조를 한 곳에서 정의
+
+```yaml
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+```
+
+### Security (인증)
+```yaml
+security:
+  - bearerAuth: []
+```
+
+---
+
+## 4. 도구 생태계
+
+| 도구 | 용도 |
+|------|------|
+| **Swagger UI** | 인터랙티브 API 문서 |
+| **Swagger Editor** | OpenAPI 파일 편집기 |
+| **openapi-generator** | 클라이언트/서버 코드 생성 |
+| **Redoc** | 깔끔한 문서 UI |
+| **Stoplight** | API 디자인 플랫폼 |
+
+---
+
+> [!IMPORTANT]
+> **3.0 vs 3.1 차이점**  
+> OpenAPI 3.1은 JSON Schema 2020-12와 100% 호환됩니다. `nullable` 키워드가 사라지고 `type: ['string', 'null']` 형식을 사용합니다.
