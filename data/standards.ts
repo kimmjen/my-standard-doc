@@ -73,6 +73,15 @@ export const standards: StandardDoc[] = [
     link: "https://nextjs.org/blog/security-2025-02-04",
   },
   {
+    id: "15",
+    slug: "cve-2025-55182",
+    code: "CVE-2025-55182",
+    title: "React2Shell: Critical RCE Chain",
+    category: "Security",
+    summary: "React Server Components의 역대급 취약점 체인. RCE, DoS, 소스 노출까지 포함.",
+    link: "https://nextjs.org/blog/security-update-2025-12-11",
+  },
+  {
     id: "8",
     slug: "rfc-793",
     code: "RFC 793",
