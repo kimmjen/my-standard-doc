@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
+import remarkGfm from "remark-gfm";
 
 // 정적 페이지 생성을 위한 경로 설정 (GitHub Pages 필수)
 export async function generateStaticParams() {
@@ -44,7 +45,7 @@ export default async function DocDetail({ params }: { params: Promise<{ slug: st
 
             {/* 마크다운 스타일링 using Tailwind typography capability via prose class */}
             <div className="prose dark:prose-invert max-w-none leading-relaxed">
-                <MDXRemote source={content} />
+                <MDXRemote source={content} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
             </div>
         </article>
     );

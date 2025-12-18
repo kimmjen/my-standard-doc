@@ -73,7 +73,7 @@ export const standards: StandardDoc[] = [
     link: "https://nextjs.org/blog/security-2025-02-04",
   },
   {
-    id: "15",
+    id: "23",
     slug: "cve-2025-55182",
     code: "CVE-2025-55182",
     title: "React2Shell: Critical RCE Chain",
