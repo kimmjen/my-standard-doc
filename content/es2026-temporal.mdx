@@ -1,0 +1,109 @@
+---
+title: "Temporal API 핵심 정리 (ECMAScript 2026)"
+date: "2026-03-11"
+---
+
+# Temporal API — JavaScript 날짜/시간의 완전한 재설계
+
+[Temporal API](https://tc39.es/proposal-temporal/)는 2026년 3월 11일 **TC39 Stage 4에 도달**하여 ES2026에 공식 포함이 확정된, JavaScript 역사상 가장 기대되는 기능 중 하나입니다.
+
+기존 `Date` 객체의 수많은 문제점을 근본적으로 해결합니다.
+
+---
+
+## 1. 왜 Temporal이 필요한가?
+
+기존 `Date` 객체의 문제점:
+
+| 문제 | 설명 |
+|---|---|
+| **변경 가능(Mutable)** | `setMonth()` 등이 원본 객체를 직접 변경 |
+| **타임존 미지원** | 로컬/UTC만 지원, 서울↔뉴욕 변환이 복잡 |
+| **월 인덱스** | 1월 = 0, 12월 = 11로 혼란 유발 |
+| **파싱 불안정** | `new Date("2024-01-01")` 결과가 환경마다 다름 |
+| **달력 시스템** | 그레고리력만 지원 |
+
+---
+
+## 2. 핵심 타입
+
+```javascript
+// 1. 날짜만 (시간 없음)
+const date = Temporal.PlainDate.from("2026-03-11");
+
+// 2. 시간만 (날짜 없음)
+const time = Temporal.PlainTime.from("14:30:00");
+
+// 3. 날짜 + 시간 (타임존 없음)
+const dateTime = Temporal.PlainDateTime.from("2026-03-11T14:30:00");
+
+// 4. 날짜 + 시간 + 타임존 (완전한 시점)
+const zoned = Temporal.ZonedDateTime.from({
+  timeZone: "Asia/Seoul",
+  year: 2026, month: 3, day: 11,
+  hour: 14, minute: 30
+});
+
+// 5. 절대 시점 (UTC 기준)
+const instant = Temporal.Now.instant();
+
+// 6. 기간
+const duration = Temporal.Duration.from({ hours: 2, minutes: 30 });
+```
+
+---
+
+## 3. 실용 예제
+
+### 타임존 변환
+
+```javascript
+const seoul = Temporal.ZonedDateTime.from({
+  timeZone: "Asia/Seoul",
+  year: 2026, month: 3, day: 11, hour: 14
+});
+
+const newYork = seoul.withTimeZone("America/New_York");
+console.log(newYork.toString());
+// 2026-03-11T01:00:00-04:00[America/New_York]
+```
+
+### 불변 연산
+
+```javascript
+const today = Temporal.PlainDate.from("2026-03-11");
+const nextWeek = today.add({ days: 7 });
+// today는 변경되지 않음 (Immutable)
+
+console.log(today.toString());    // "2026-03-11"
+console.log(nextWeek.toString()); // "2026-03-18"
+```
+
+### 두 날짜 사이 차이
+
+```javascript
+const start = Temporal.PlainDate.from("2025-12-18");
+const end = Temporal.PlainDate.from("2026-03-11");
+const diff = start.until(end, { largestUnit: "month" });
+
+console.log(diff.toString()); // "P2M21D" (2개월 21일)
+```
+
+---
+
+## 4. Date vs Temporal 비교
+
+| 기능 | Date | Temporal |
+|---|---|---|
+| 불변성 | ❌ 변경 가능 | ✅ 불변 |
+| 타임존 | ❌ 로컬/UTC만 | ✅ IANA 타임존 완전 지원 |
+| 월 인덱스 | 0~11 | 1~12 |
+| 나노초 정밀도 | ❌ 밀리초 | ✅ 나노초 |
+| 달력 시스템 | 그레고리력만 | 다중 달력 지원 |
+| 기간 계산 | 수동 | `until()`, `since()` 내장 |
+
+---
+
+> [!TIP]
+> Temporal은 아직 대부분의 브라우저에서 네이티브 지원되지 않지만,
+> **`@js-temporal/polyfill`** 패키지로 오늘부터 사용할 수 있습니다.

@@ -1,0 +1,117 @@
+---
+title: "Decorators 핵심 정리 (ECMAScript 2026)"
+date: "2026-03-01"
+---
+
+# Decorators — 네이티브 메타프로그래밍
+
+[Decorators](https://github.com/tc39/proposal-decorators)는 클래스와 클래스 멤버에 **선언적으로 기능을 추가**할 수 있게 해주는 ECMAScript 2026의 새로운 문법입니다.
+
+TypeScript에서 실험적으로 사용하던 `@decorator` 문법이 드디어 **JavaScript 표준**이 됩니다.
+
+---
+
+## 1. 기본 문법
+
+```javascript
+// 데코레이터 정의
+function logged(originalMethod, context) {
+  function replacementMethod(...args) {
+    console.log(`Calling ${context.name} with`, args);
+    const result = originalMethod.call(this, ...args);
+    console.log(`${context.name} returned`, result);
+    return result;
+  }
+  return replacementMethod;
+}
+
+// 데코레이터 적용
+class Calculator {
+  @logged
+  add(a, b) {
+    return a + b;
+  }
+}
+
+const calc = new Calculator();
+calc.add(2, 3);
+// Calling add with [2, 3]
+// add returned 5
+```
+
+---
+
+## 2. 데코레이터가 적용 가능한 대상
+
+| 대상 | 예시 |
+|---|---|
+| **클래스** | `@Component class MyClass {}` |
+| **메서드** | `@logged add(a, b) {}` |
+| **getter / setter** | `@cached get value() {}` |
+| **필드** | `@observable count = 0;` |
+| **접근자(auto-accessor)** | `@reactive accessor name = "";` |
+
+---
+
+## 3. 실용 패턴
+
+### 성능 측정
+
+```javascript
+function measure(fn, context) {
+  return function (...args) {
+    const start = performance.now();
+    const result = fn.call(this, ...args);
+    const end = performance.now();
+    console.log(`${context.name}: ${(end - start).toFixed(2)}ms`);
+    return result;
+  };
+}
+
+class DataService {
+  @measure
+  processLargeDataset(data) {
+    // 무거운 처리...
+  }
+}
+```
+
+### 메모이제이션
+
+```javascript
+function memoize(fn, context) {
+  const cache = new Map();
+  return function (...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) return cache.get(key);
+    const result = fn.call(this, ...args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+class MathService {
+  @memoize
+  fibonacci(n) {
+    if (n <= 1) return n;
+    return this.fibonacci(n - 1) + this.fibonacci(n - 2);
+  }
+}
+```
+
+---
+
+## 4. TC39 vs TypeScript 데코레이터 차이점
+
+| 항목 | TC39 (ES2026) | TypeScript (실험적) |
+|---|---|---|
+| **인자** | `(value, context)` | `(target, key, descriptor)` |
+| **매개변수 데코레이터** | ❌ 미지원 | ✅ 지원 |
+| **메타데이터** | `Symbol.metadata` | `reflect-metadata` |
+| **표준** | ✅ 언어 표준 | ⚠️ 실험적 |
+
+---
+
+> [!WARNING]
+> TypeScript의 `experimentalDecorators`와 TC39 표준 데코레이터는 **호환되지 않습니다**.
+> 새 프로젝트에서는 TC39 표준 문법 사용을 권장합니다.

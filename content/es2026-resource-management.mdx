@@ -1,0 +1,130 @@
+---
+title: "Explicit Resource Management 핵심 정리 (ECMAScript 2026)"
+date: "2026-03-01"
+---
+
+# Explicit Resource Management — using 키워드
+
+[Explicit Resource Management](https://github.com/tc39/proposal-explicit-resource-management)는 `using` 키워드를 통해 **자원의 자동 해제**를 언어 차원에서 지원하는 ECMAScript 2026의 새로운 기능입니다.
+
+C#의 `using`, Python의 `with`, Java의 `try-with-resources`와 유사한 패턴입니다.
+
+---
+
+## 1. 핵심 개념
+
+### 기존 방식 (수동 정리)
+
+```javascript
+// ❌ 자원 해제를 잊거나, 에러 발생 시 누수
+const file = await openFile("data.txt");
+try {
+  const data = await file.read();
+  process(data);
+} finally {
+  await file.close(); // 매번 수동으로 해야 함
+}
+```
+
+### using 방식 (자동 정리)
+
+```javascript
+// ✅ 스코프를 벗어나면 자동으로 [Symbol.dispose]() 호출
+{
+  using file = await openFile("data.txt");
+  const data = await file.read();
+  process(data);
+} // ← 여기서 자동으로 file.close() 실행
+```
+
+---
+
+## 2. 두 가지 키워드
+
+| 키워드 | Symbol | 용도 |
+|---|---|---|
+| `using` | `Symbol.dispose` | 동기 자원 정리 |
+| `await using` | `Symbol.asyncDispose` | 비동기 자원 정리 |
+
+---
+
+## 3. Disposable 객체 만들기
+
+### 동기 Disposable
+
+```javascript
+class DatabaseConnection {
+  constructor(url) {
+    this.conn = connect(url);
+  }
+
+  query(sql) {
+    return this.conn.execute(sql);
+  }
+
+  [Symbol.dispose]() {
+    this.conn.close();
+    console.log("DB 연결 해제됨");
+  }
+}
+
+// 사용
+{
+  using db = new DatabaseConnection("postgres://...");
+  const users = db.query("SELECT * FROM users");
+} // 자동으로 DB 연결 해제
+```
+
+### 비동기 AsyncDisposable
+
+```javascript
+class FileHandle {
+  async [Symbol.asyncDispose]() {
+    await this.flush();
+    await this.close();
+  }
+}
+
+// 사용
+{
+  await using file = await openFile("log.txt");
+  await file.write("Hello World");
+} // 자동으로 flush + close
+```
+
+---
+
+## 4. DisposableStack
+
+여러 자원을 그룹으로 관리할 때 사용합니다.
+
+```javascript
+{
+  using stack = new DisposableStack();
+
+  const db = stack.use(new DatabaseConnection(url));
+  const cache = stack.use(new CacheClient(redisUrl));
+  const tempFile = stack.use(createTempFile());
+
+  // 비즈니스 로직...
+} // 모든 자원이 역순으로 정리됨: tempFile → cache → db
+```
+
+---
+
+## 5. 실제 활용 사례
+
+| 자원 | 정리 동작 |
+|---|---|
+| 파일 핸들 | 닫기(close) |
+| DB 연결 | 반환/해제 |
+| 락(Lock) | 해제(unlock) |
+| 임시 파일 | 삭제 |
+| 이벤트 리스너 | 제거(removeEventListener) |
+| 타이머 | 취소(clearInterval) |
+
+---
+
+> [!NOTE]
+> TypeScript 5.2+에서 이미 `using`과 `await using`을 지원합니다.
+> 브라우저 네이티브 지원은 ES2026 정식 발표 이후 순차 적용될 예정입니다.
