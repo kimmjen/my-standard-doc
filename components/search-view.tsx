@@ -9,15 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, ExternalLink } from "lucide-react";
 
-function isNew(date: string): boolean {
-    const docDate = new Date(date);
-    const now = new Date();
-    const diffMs = now.getTime() - docDate.getTime();
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    return diffDays <= 3;
+function isNew(createdAt: string, buildDate: string): boolean {
+    const created = new Date(createdAt).getTime();
+    const built = new Date(buildDate).getTime();
+    const diffDays = (built - created) / (1000 * 60 * 60 * 24);
+    return diffDays >= 0 && diffDays <= 3;
 }
 
-export default function SearchView({ docs }: { docs: StandardDoc[] }) {
+export default function SearchView({ docs, buildDate }: { docs: StandardDoc[]; buildDate: string }) {
     const [query, setQuery] = useState("");
 
     // 실시간 필터링
@@ -48,7 +47,7 @@ export default function SearchView({ docs }: { docs: StandardDoc[] }) {
                             <div className="flex justify-between items-start mb-1">
                                 <div className="flex gap-1.5">
                                     <Badge variant="secondary" className="mb-0">{doc.category}</Badge>
-                                    {isNew(doc.date) && (
+                                    {isNew(doc.createdAt, buildDate) && (
                                         <Badge variant="destructive" className="mb-0">New</Badge>
                                     )}
                                 </div>
