@@ -1,0 +1,80 @@
+---
+title: "HTTP Digest Fields (RFC 9530)"
+date: "2024-02-01"
+---
+
+# HTTP Digest Fields
+
+[RFC 9530](https://datatracker.ietf.org/doc/html/rfc9530)은 HTTP 메시지 콘텐츠의 **무결성(integrity)**을 검증하기 위한 다이제스트 필드를 정의합니다. 기존 RFC 3230을 대체합니다.
+
+---
+
+## 1. 핵심 개념
+
+RFC 9530은 두 가지 무결성 메커니즘을 구분합니다:
+
+### Content-Digest (콘텐츠 무결성)
+
+실제 전송되는 콘텐츠(Content-Encoding 적용 후)의 해시값입니다.
+
+```http
+Content-Digest: sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:
+```
+
+### Repr-Digest (표현 데이터 무결성)
+
+표현 데이터(Content-Encoding 적용 전 원본)의 해시값입니다.
+
+```http
+Repr-Digest: sha-256=:abc123def456...:
+```
+
+---
+
+## 2. Content-Digest vs Repr-Digest
+
+| 구분 | Content-Digest | Repr-Digest |
+|------|---------------|-------------|
+| 대상 | 전송된 바이트 그대로 | 디코딩 후 원본 데이터 |
+| 압축 영향 | gzip 등 적용 후 해시 | 압축 전 원본 해시 |
+| 용도 | 전송 무결성 확인 | 의미적 데이터 무결성 확인 |
+
+---
+
+## 3. 지원 알고리즘
+
+| 알고리즘 | 상태 | 비고 |
+|---------|------|------|
+| sha-256 | 권장 | 범용 사용 |
+| sha-512 | 권장 | 높은 보안 요구 시 |
+| md5 | 사용 금지 | 충돌 취약점 |
+| sha | 사용 금지 | SHA-1 더 이상 안전하지 않음 |
+
+---
+
+## 4. RFC 9421과 함께 사용
+
+RFC 9530 단독으로는 다이제스트 값 자체가 변조될 수 있습니다. [RFC 9421 (HTTP Message Signatures)](/docs/rfc-9421/)로 다이제스트 헤더를 서명하면 완전한 보호가 가능합니다.
+
+```http
+Content-Digest: sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:
+Signature-Input: sig1=("content-digest" "@method" "@target-uri");keyid="my-key"
+Signature: sig1=:서명값:
+```
+
+**주의**: `Content-Digest`에 서명할 때 `Content-Type`, `Content-Encoding` 등 표현 메타데이터도 함께 서명해야 합니다. 그렇지 않으면 메타데이터만 변조하여 다이제스트 검증을 무력화할 수 있습니다.
+
+---
+
+## 5. 실무 적용
+
+- **파일 업로드 API**: 업로드된 파일이 전송 중 손상되지 않았는지 확인
+- **캐시 검증**: 캐시된 응답의 무결성을 재확인
+- **감사 로그**: 응답 본문이 변조되지 않았음을 증명
+
+---
+
+## 6. 참고 자료
+
+- [RFC 9530 원문](https://datatracker.ietf.org/doc/html/rfc9530)
+- [RFC 9421 - HTTP Message Signatures](https://datatracker.ietf.org/doc/html/rfc9421)

@@ -1,0 +1,98 @@
+---
+title: "JSON.parse Source Text Access (ECMAScript 2026)"
+date: "2025-11-01"
+---
+
+# JSON.parse Source Text Access
+
+[JSON.parse with source](https://github.com/tc39/proposal-json-parse-with-source)는 ECMAScript 2026에 포함된 제안으로, `JSON.parse`의 reviver 함수에서 **원본 소스 텍스트에 접근**할 수 있게 합니다.
+
+---
+
+## 1. 기존 문제점
+
+JavaScript의 `number` 타입은 IEEE 754 배정밀도 부동소수점으로, 큰 정수를 정확하게 표현할 수 없습니다:
+
+```javascript
+const json = '{"id": 9007199254740993}';
+const obj = JSON.parse(json);
+console.log(obj.id); // 9007199254740992 (정밀도 손실!)
+```
+
+`2^53`을 넘는 정수는 파싱 과정에서 자동으로 `number`로 변환되면서 값이 바뀝니다. 금융, 분산 시스템의 ID 등에서 치명적인 문제입니다.
+
+---
+
+## 2. reviver의 source 파라미터
+
+기존 `JSON.parse`의 reviver 함수에 세 번째 인자로 **원본 소스 텍스트 정보**가 제공됩니다:
+
+```javascript
+const json = '{"id": 9007199254740993, "name": "test"}';
+
+const obj = JSON.parse(json, (key, value, context) => {
+  if (key === "id") {
+    // context.source에 원본 문자열 "9007199254740993"이 들어있음
+    return BigInt(context.source);
+  }
+  return value;
+});
+
+console.log(obj.id); // 9007199254740993n (정확한 BigInt)
+```
+
+### context 객체
+
+| 속성 | 타입 | 설명 |
+|------|------|------|
+| `source` | `string` | JSON 원본에서 해당 값의 소스 텍스트 |
+
+`source`는 **프리미티브 값**(숫자, 문자열, boolean, null)에 대해서만 제공됩니다. 객체나 배열에는 `undefined`입니다.
+
+---
+
+## 3. 실용 예시
+
+### 정밀한 숫자 처리
+
+```javascript
+function parseWithBigInt(json) {
+  return JSON.parse(json, (key, value, { source }) => {
+    if (typeof value === "number" && source !== undefined) {
+      // 정수이면서 안전 범위를 넘으면 BigInt로 변환
+      if (Number.isInteger(value) && !Number.isSafeInteger(value)) {
+        return BigInt(source);
+      }
+    }
+    return value;
+  });
+}
+```
+
+### 커스텀 Decimal 타입
+
+```javascript
+import { Decimal } from "decimal.js";
+
+const parsed = JSON.parse(financialJson, (key, value, { source }) => {
+  if (typeof value === "number" && source !== undefined) {
+    return new Decimal(source); // 원본 텍스트로 정확한 소수점 유지
+  }
+  return value;
+});
+```
+
+---
+
+## 4. 주의사항
+
+- `source`는 프리미티브 값에만 제공됩니다 (객체, 배열은 `undefined`)
+- 기존 2인자 reviver 코드와 완전히 하위 호환됩니다
+- `JSON.rawJSON()`과 `JSON.isRawJSON()`도 함께 도입되어 직렬화 시에도 원본 텍스트를 유지할 수 있습니다
+
+---
+
+## 5. 참고 자료
+
+- [TC39 Proposal](https://github.com/tc39/proposal-json-parse-with-source)
+- [TC39 Stage 4 확정 (2025.11)](https://github.com/tc39/proposals/blob/main/finished-proposals.md)

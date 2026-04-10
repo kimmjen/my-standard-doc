@@ -1,0 +1,78 @@
+---
+title: "HTTP Message Signatures (RFC 9421)"
+date: "2024-02-01"
+---
+
+# HTTP Message Signatures
+
+[RFC 9421](https://datatracker.ietf.org/doc/html/rfc9421)은 HTTP 요청과 응답에 디지털 서명을 적용하여 **메시지 무결성**과 **발신자 인증**을 보장하는 표준입니다.
+
+---
+
+## 1. 왜 필요한가?
+
+HTTPS(TLS)는 전송 구간 암호화만 제공합니다. 다음 상황에서는 추가적인 메시지 수준 보호가 필요합니다:
+
+- **프록시/게이트웨이 경유**: TLS 종료 후 내부 네트워크에서 메시지가 변조될 수 있음
+- **로그/감사 추적**: 특정 요청이 정말 해당 클라이언트에서 온 것인지 증명
+- **API 인증**: API 키 대신 서명 기반 인증으로 보안 강화
+
+---
+
+## 2. 핵심 개념
+
+### Signature Base
+
+서명할 대상을 정의합니다. HTTP 메시지의 어떤 부분(메서드, 경로, 헤더 등)을 서명에 포함할지 선택합니다.
+
+```
+"@method": GET
+"@target-uri": https://example.com/api/resource
+"content-type": application/json
+"@signature-params": ("@method" "@target-uri" "content-type");created=1618884473;keyid="my-key"
+```
+
+### Signature 헤더
+
+생성된 서명은 `Signature` 및 `Signature-Input` 헤더를 통해 전달됩니다.
+
+```http
+Signature-Input: sig1=("@method" "@target-uri" "content-type");created=1618884473;keyid="my-key"
+Signature: sig1=:base64로_인코딩된_서명값:
+```
+
+---
+
+## 3. 지원하는 알고리즘
+
+| 알고리즘 | 유형 | 용도 |
+|---------|------|------|
+| RSASSA-PSS (SHA-512) | 비대칭 | 범용 서명 |
+| ECDSA (P-256, SHA-256) | 비대칭 | 경량 서명 |
+| Ed25519 | 비대칭 | 고성능 서명 |
+| HMAC-SHA256 | 대칭 | 신뢰 관계가 있는 서버 간 통신 |
+
+---
+
+## 4. RFC 9530과의 관계
+
+RFC 9421은 메시지 **헤더와 메타데이터**에 서명합니다. 메시지 **본문(body)**의 무결성은 [RFC 9530 (Digest Fields)](/docs/rfc-9530/)이 담당합니다.
+
+두 표준을 함께 사용하면:
+1. RFC 9530으로 본문의 다이제스트(해시)를 생성하여 `Content-Digest` 헤더에 추가
+2. RFC 9421로 `Content-Digest` 헤더를 포함한 메시지 전체에 서명
+
+---
+
+## 5. 실무 적용 사례
+
+- **금융 API (Open Banking)**: PSD2 규제에서 요구하는 요청 서명
+- **Webhook 검증**: 수신 측에서 발신자를 암호학적으로 확인
+- **Federated 프로토콜**: ActivityPub(Mastodon 등)에서 서버 간 인증
+
+---
+
+## 6. 참고 자료
+
+- [RFC 9421 원문](https://datatracker.ietf.org/doc/html/rfc9421)
+- [RFC 9530 - Digest Fields](https://datatracker.ietf.org/doc/html/rfc9530)
