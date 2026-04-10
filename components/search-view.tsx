@@ -9,6 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, ExternalLink } from "lucide-react";
 
+function isNew(date: string): boolean {
+    const docDate = new Date(date);
+    const now = new Date();
+    const diffMs = now.getTime() - docDate.getTime();
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    return diffDays <= 3;
+}
+
 export default function SearchView({ docs }: { docs: StandardDoc[] }) {
     const [query, setQuery] = useState("");
 
@@ -38,7 +46,12 @@ export default function SearchView({ docs }: { docs: StandardDoc[] }) {
                     <Card key={doc.id} className="flex flex-col h-full hover:border-primary transition-colors">
                         <CardHeader className="pb-3">
                             <div className="flex justify-between items-start mb-1">
-                                <Badge variant="secondary" className="mb-0">{doc.category}</Badge>
+                                <div className="flex gap-1.5">
+                                    <Badge variant="secondary" className="mb-0">{doc.category}</Badge>
+                                    {isNew(doc.date) && (
+                                        <Badge variant="destructive" className="mb-0">New</Badge>
+                                    )}
+                                </div>
                                 <span className="text-xs font-mono text-muted-foreground">{doc.code}</span>
                             </div>
                             <CardTitle className="text-xl leading-snug">{doc.title}</CardTitle>
