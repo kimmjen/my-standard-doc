@@ -1,0 +1,72 @@
+---
+title: "Node.js January 2026 Security Releases"
+date: "2026-01-13"
+---
+
+# Node.js January 2026 Security Releases
+
+2026년 1월 13일, Node.js 프로젝트는 모든 활성 릴리즈 라인(20.x, 22.x, 24.x, 25.x)에 대해 **8개의 CVE**를 수정하는 보안 패치를 발표했습니다.
+
+---
+
+## 1. High Severity
+
+### CVE-2025-55131 - Buffer 메모리 누출
+
+`Buffer.alloc`과 `TypedArray` 인스턴스에 이전 작업의 데이터가 남아있을 수 있는 취약점입니다. 토큰, 비밀번호 등 민감한 데이터가 프로세스 내에서 유출될 수 있습니다.
+
+**영향**: 메모리에 남아있는 이전 세션의 인증 토큰 등이 새 Buffer에 노출될 가능성
+
+### CVE-2025-55130 - Symlink을 이용한 권한 우회
+
+Node.js의 Permission 모델에서 상대 경로 심볼릭 링크를 이용하여 `--allow-fs-read`와 `--allow-fs-write` 제한을 우회할 수 있는 취약점입니다.
+
+### CVE-2025-59465 - HTTP/2 DoS
+
+잘못된 형식의 HTTP/2 HEADERS 프레임(과도한 HPACK 데이터)이 TLSSocket에서 처리되지 않는 에러를 발생시켜 Node.js 프로세스를 크래시시키는 취약점입니다.
+
+---
+
+## 2. Medium Severity
+
+### CVE-2026-21636 - Unix Domain Socket 권한 우회
+
+`--permission` 모드에서 네트워크 제한이 활성화되어 있어도 Unix Domain Socket(UDS) 연결이 `--allow-net` 검사를 우회할 수 있는 취약점입니다.
+
+### 기타 Medium
+
+- **AsyncLocalStorage 크래시**: 특정 조건에서 비동기 컨텍스트 추적이 프로세스를 크래시
+- **TLS 메모리 누출**: TLS 핸드셰이크 과정에서 메모리 해제가 누락
+- **TLS 콜백 DoS**: 악의적 TLS 요청으로 서비스 거부 유발
+
+---
+
+## 3. Low Severity
+
+- **타임스탬프 기반 권한 우회**: 파일 시스템 타임스탬프 조작을 통한 권한 검사 우회
+
+---
+
+## 4. 영향받는 버전과 패치
+
+| 릴리즈 라인 | 패치 버전 |
+|------------|----------|
+| 20.x | v20.20.0 |
+| 22.x | v22.22.0 |
+| 24.x | v24.13.0 |
+| 25.x | v25.3.0 |
+
+---
+
+## 5. 조치 사항
+
+- 즉시 패치 버전으로 업그레이드
+- Permission 모델(`--permission`)을 사용하는 경우 특히 주의
+- HTTP/2를 사용하는 서비스는 프록시 단에서 잘못된 HEADERS 프레임 필터링 검토
+
+---
+
+## 6. 참고 자료
+
+- [Node.js 공식 보안 릴리즈 공지](https://nodejs.org/en/blog/vulnerability/december-2025-security-releases)
+- [Node.js 보안 정책](https://nodejs.org/en/security/)

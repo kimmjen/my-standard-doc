@@ -1,0 +1,90 @@
+---
+title: "Node.js March 2026 Security Releases"
+date: "2026-03-24"
+---
+
+# Node.js March 2026 Security Releases
+
+2026년 3월 24일, Node.js 프로젝트는 모든 활성 릴리즈 라인(20.x, 22.x, 24.x, 25.x)에 대해 **8개의 CVE**를 수정하는 보안 패치를 발표했습니다.
+
+---
+
+## 1. High Severity (DoS - 프로세스 크래시)
+
+### CVE-2026-21637 - TLS SNICallback 크래시
+
+TLS 에러 핸들링의 결함으로, `SNICallback`이 예상치 못한 입력에 동기적으로 예외를 던지면 TLS 에러 핸들러를 우회하여 uncaught exception으로 전파됩니다. Node.js 프로세스가 크래시됩니다.
+
+```javascript
+// 취약한 패턴
+const server = tls.createServer({
+  SNICallback: (servername, cb) => {
+    // 악의적 입력에서 동기 예외 발생 시 프로세스 크래시
+    const ctx = getContext(servername); // throws!
+    cb(null, ctx);
+  }
+});
+```
+
+### CVE-2026-21710 - `__proto__` 헤더 DoS
+
+`__proto__`라는 이름의 HTTP 헤더가 포함된 요청을 받을 때, `req.headersDistinct`에 접근하면 uncaught TypeError가 발생하여 프로세스가 크래시됩니다.
+
+---
+
+## 2. Medium Severity
+
+### CVE-2026-21714 - HTTP/2 리소스 고갈
+
+악의적 `WINDOW_UPDATE` 프레임 수신 후 `Http2Session` 객체가 정리되지 않아 메모리가 지속적으로 증가하는 리소스 고갈 취약점입니다.
+
+### CVE-2026-21717 - V8 해시 충돌 DoS
+
+V8 엔진의 문자열 해싱 결함으로 공격자가 대규모 해시 충돌을 유발할 수 있습니다. 서버 성능이 크게 저하됩니다.
+
+### CVE-2026-21713 - HMAC 타이밍 공격
+
+HMAC 검증 시 상수 시간 비교(constant-time comparison)가 되지 않아, 고해상도 타이밍 측정으로 비밀 값을 추론할 수 있는 취약점입니다.
+
+---
+
+## 3. Low Severity (Permission Model 우회)
+
+### CVE-2026-21716 - FileHandle 권한 검사 누락
+
+CVE-2024-36137의 불완전한 수정. Promise API의 `FileHandle.chmod()`과 `FileHandle.chown()`이 Permission 검사 없이 동작합니다.
+
+### CVE-2026-21711 - UDS 네트워크 제한 우회
+
+제한된 네트워크 권한 하에서 Unix Domain Socket 엔드포인트를 생성하고 노출할 수 있습니다.
+
+### CVE-2026-21715 - fs.realpathSync.native 정보 노출
+
+`--allow-fs-read` 제한이 있어도 `fs.realpathSync.native()`로 파일 존재 여부 확인과 심볼릭 링크 대상 조회가 가능합니다.
+
+---
+
+## 4. 영향받는 버전과 패치
+
+| 릴리즈 라인 | 패치 버전 |
+|------------|----------|
+| 20.x | v20.20.2 |
+| 22.x | v22.22.2 |
+| 24.x | v24.14.1 |
+| 25.x | v25.8.2 |
+
+---
+
+## 5. 조치 사항
+
+- 즉시 패치 버전으로 업그레이드
+- TLS 서버의 `SNICallback`에서 동기 예외가 발생하지 않도록 방어 코드 추가
+- HTTP 요청 헤더에 `__proto__` 등 프로토타입 오염 가능한 이름 필터링 검토
+- Permission 모델 사용 시 FileHandle API의 권한 검사 우회 가능성 인지
+
+---
+
+## 6. 참고 자료
+
+- [Node.js 공식 보안 릴리즈 공지](https://nodejs.org/en/blog/vulnerability/march-2026-security-releases)
+- [Node.js 보안 정책](https://nodejs.org/en/security/)
