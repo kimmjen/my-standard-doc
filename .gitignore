@@ -40,5 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# pnpm
-pnpm-lock.yaml
+# npm (pnpm 사용)
+package-lock.json
