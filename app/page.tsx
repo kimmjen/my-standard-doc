@@ -21,7 +21,7 @@ export default function Home() {
           총 {standards.length}개 문서 | 마지막 배포: {deployDate}
         </p>
       </div>
-      <SearchView docs={standards} />
+      <SearchView docs={standards} buildDate={new Date().toISOString()} />
     </main>
   );
 }

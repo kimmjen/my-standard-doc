@@ -5,7 +5,8 @@ export type StandardDoc = {
   title: string;
   category: "Network" | "Web" | "Auth" | "Language" | "Infra" | "Security";
   summary: string;
-  date: string; // 작성일 (YYYY-MM-DD)
+  date: string; // 원본 발행일 (YYYY-MM-DD)
+  createdAt: string; // 사이트 등록일 (YYYY-MM-DD)
   link: string; // 공식 원문 링크
 };
 
@@ -18,6 +19,7 @@ export const standards: StandardDoc[] = [
     category: "Auth",
     summary: "인증과 권한 부여의 분리. Access Token 발급 프로세스 정의.",
     date: "2024-05-21",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc6749",
   },
   {
@@ -28,6 +30,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "HTTP 메서드와 상태 코드의 의미를 정의한 문서.",
     date: "2014-06-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc7231",
   },
   {
@@ -38,6 +41,7 @@ export const standards: StandardDoc[] = [
     category: "Language",
     summary: "자바스크립트의 동작 원리와 문법을 정의한 공식 명세.",
     date: "2023-06-01",
+    createdAt: "2025-12-12",
     link: "https://tc39.es/ecma262/",
   },
   {
@@ -48,6 +52,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "데이터 교환의 표준 JSON 문법 인코딩 규칙.",
     date: "2017-12-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc8259",
   },
   {
@@ -58,6 +63,7 @@ export const standards: StandardDoc[] = [
     category: "Infra",
     summary: "고유 식별자 UUID의 생성 규칙과 버전별 차이점.",
     date: "2005-07-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc4122",
   },
   {
@@ -68,6 +74,7 @@ export const standards: StandardDoc[] = [
     category: "Network",
     summary: "사설 IP 주소 대역(10.x, 192.168.x)의 정의와 사용 이유.",
     date: "1996-02-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc1918",
   },
   {
@@ -78,6 +85,7 @@ export const standards: StandardDoc[] = [
     category: "Security",
     summary: "Next.js App Router와 React Server Components에서 발견된 치명적 원격 코드 실행 취약점.",
     date: "2025-12-04",
+    createdAt: "2025-12-12",
     link: "https://nextjs.org/blog/security-2025-02-04",
   },
   {
@@ -88,6 +96,7 @@ export const standards: StandardDoc[] = [
     category: "Security",
     summary: "React Server Components의 역대급 취약점 체인. RCE, DoS, 소스 노출까지 포함.",
     date: "2025-12-11",
+    createdAt: "2025-12-12",
     link: "https://nextjs.org/blog/security-update-2025-12-11",
   },
   {
@@ -98,6 +107,7 @@ export const standards: StandardDoc[] = [
     category: "Network",
     summary: "인터넷 데이터 전송의 신뢰성을 보장하는 연결 지향 프로토콜.",
     date: "1981-09-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc793",
   },
   {
@@ -108,6 +118,7 @@ export const standards: StandardDoc[] = [
     category: "Network",
     summary: "도메인 이름과 IP 주소를 매핑하는 시스템의 구현 표준.",
     date: "1987-11-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc1035",
   },
   {
@@ -118,6 +129,7 @@ export const standards: StandardDoc[] = [
     category: "Security",
     summary: "HTTPS의 기반이 되는 최신 암호화 통신 프로토콜.",
     date: "2018-08-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc8446",
   },
   {
@@ -128,6 +140,7 @@ export const standards: StandardDoc[] = [
     category: "Auth",
     summary: "비밀번호 규칙과 디지털 자격 증명에 대한 최신 보안 가이드라인.",
     date: "2017-06-01",
+    createdAt: "2025-12-12",
     link: "https://pages.nist.gov/800-63-3/sp800-63b.html",
   },
   {
@@ -138,6 +151,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "이메일 주소의 표준 형식과 유효성 검증의 기준.",
     date: "2008-10-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc5322",
   },
   {
@@ -148,6 +162,7 @@ export const standards: StandardDoc[] = [
     category: "Auth",
     summary: "웹 표준 인증 방식인 JWT의 구조와 보안 메커니즘.",
     date: "2015-05-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc7519",
   },
   {
@@ -158,6 +173,7 @@ export const standards: StandardDoc[] = [
     category: "Auth",
     summary: "구글 OTP 등 2단계 인증(2FA)에서 사용하는 시간 기반 일회용 암호 표준.",
     date: "2011-05-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc6238",
   },
   {
@@ -168,6 +184,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "HTTP API에서 에러 응답을 표준화된 JSON 형식으로 반환하는 방법.",
     date: "2016-03-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc7807",
   },
   {
@@ -178,6 +195,7 @@ export const standards: StandardDoc[] = [
     category: "Auth",
     summary: "OAuth 2.0의 Authorization Code 탈취 공격을 방지하는 보안 확장.",
     date: "2015-09-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc7636",
   },
   {
@@ -188,6 +206,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "클라이언트-서버 간 양방향 실시간 통신을 위한 프로토콜.",
     date: "2011-12-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc6455",
   },
   {
@@ -198,6 +217,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "HTTP/1.1, HTTP/2, HTTP/3 모두에 적용되는 최신 HTTP 핵심 명세.",
     date: "2022-06-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc9110",
   },
   {
@@ -208,6 +228,7 @@ export const standards: StandardDoc[] = [
     category: "Infra",
     summary: "REST API를 표준화된 YAML/JSON 형식으로 문서화하는 명세.",
     date: "2021-02-15",
+    createdAt: "2025-12-12",
     link: "https://spec.openapis.org/oas/latest.html",
   },
   {
@@ -218,6 +239,7 @@ export const standards: StandardDoc[] = [
     category: "Infra",
     summary: "MAJOR.MINOR.PATCH 형식의 의미 있는 버전 번호 부여 규칙.",
     date: "2013-06-01",
+    createdAt: "2025-12-12",
     link: "https://semver.org/",
   },
   {
@@ -228,6 +250,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "멀티플렉싱, 헤더 압축 등 HTTP/1.1의 성능 한계를 극복한 프로토콜.",
     date: "2015-05-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc7540",
   },
   {
@@ -238,6 +261,7 @@ export const standards: StandardDoc[] = [
     category: "Infra",
     summary: "클라우드 네이티브 애플리케이션 설계를 위한 12가지 원칙.",
     date: "2012-01-01",
+    createdAt: "2025-12-12",
     link: "https://12factor.net/",
   },
   {
@@ -248,6 +272,7 @@ export const standards: StandardDoc[] = [
     category: "Security",
     summary: "React Server Components에서 악성 HTTP 요청으로 메모리 고갈 및 서버 크래시를 유발하는 DoS 취약점.",
     date: "2026-01-26",
+    createdAt: "2025-12-12",
     link: "https://github.com/facebook/react/security/advisories/GHSA-jcjv-x3g2-h78c",
   },
   {
@@ -258,6 +283,7 @@ export const standards: StandardDoc[] = [
     category: "Security",
     summary: "x-middleware-subrequest 헤더 조작으로 Next.js 미들웨어 인증/인가를 우회하는 치명적 취약점.",
     date: "2025-03-21",
+    createdAt: "2025-12-12",
     link: "https://github.com/vercel/next.js/security/advisories/GHSA-f82v-jh2m-4f9f",
   },
   {
@@ -268,6 +294,7 @@ export const standards: StandardDoc[] = [
     category: "Security",
     summary: "React Router의 서버 사이드 액션 핸들러에서 CSRF 공격이 가능한 취약점.",
     date: "2026-01-09",
+    createdAt: "2025-12-12",
     link: "https://nvd.nist.gov/vuln/detail/CVE-2026-22030",
   },
   {
@@ -278,6 +305,7 @@ export const standards: StandardDoc[] = [
     category: "Language",
     summary: "JavaScript 날짜/시간 처리의 완전한 재설계. Date 객체의 한계를 극복한 차세대 API.",
     date: "2026-03-11",
+    createdAt: "2025-12-12",
     link: "https://tc39.es/proposal-temporal/",
   },
   {
@@ -288,6 +316,7 @@ export const standards: StandardDoc[] = [
     category: "Language",
     summary: "클래스와 메서드에 메타프로그래밍 기능을 부여하는 네이티브 데코레이터 표준.",
     date: "2026-03-01",
+    createdAt: "2025-12-12",
     link: "https://github.com/tc39/proposal-decorators",
   },
   {
@@ -298,6 +327,7 @@ export const standards: StandardDoc[] = [
     category: "Language",
     summary: "using / await using 키워드로 파일 핸들, DB 연결 등의 자원을 자동으로 정리하는 표준.",
     date: "2026-03-01",
+    createdAt: "2025-12-12",
     link: "https://github.com/tc39/proposal-explicit-resource-management",
   },
   {
@@ -308,6 +338,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "QUIC 기반의 차세대 HTTP 프로토콜. 멀티플렉싱, 0-RTT 연결로 지연 시간 대폭 감소.",
     date: "2026-03-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc9114",
   },
   {
@@ -318,6 +349,7 @@ export const standards: StandardDoc[] = [
     category: "Network",
     summary: "UDP 위에서 동작하는 차세대 전송 프로토콜. TLS 1.3 내장, HTTP/3의 기반.",
     date: "2026-03-01",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/html/rfc9000",
   },
   {
@@ -328,6 +360,7 @@ export const standards: StandardDoc[] = [
     category: "Auth",
     summary: "OAuth 2.0을 대체할 통합 표준. PKCE 필수화, Implicit/ROPC 방식 제거, 보안 강화.",
     date: "2026-03-02",
+    createdAt: "2025-12-12",
     link: "https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/",
   },
   {
@@ -338,6 +371,7 @@ export const standards: StandardDoc[] = [
     category: "Auth",
     summary: "패스키(Passkey) 기반 비밀번호 없는 인증의 차세대 웹 표준.",
     date: "2026-01-15",
+    createdAt: "2025-12-12",
     link: "https://www.w3.org/TR/webauthn-3/",
   },
   {
@@ -348,6 +382,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "HTTP 요청/응답에 디지털 서명을 적용하여 메시지 무결성과 발신자 인증을 보장하는 표준.",
     date: "2024-02-01",
+    createdAt: "2026-04-10",
     link: "https://datatracker.ietf.org/doc/html/rfc9421",
   },
   {
@@ -358,6 +393,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "HTTP 메시지 콘텐츠의 무결성을 검증하기 위한 다이제스트 필드 표준. RFC 9421과 함께 사용.",
     date: "2024-02-01",
+    createdAt: "2026-04-10",
     link: "https://datatracker.ietf.org/doc/html/rfc9530",
   },
   {
@@ -368,6 +404,7 @@ export const standards: StandardDoc[] = [
     category: "Language",
     summary: "Map에서 키의 존재 여부에 따라 삽입 또는 업데이트를 단일 호출로 처리하는 메서드.",
     date: "2026-01-20",
+    createdAt: "2026-04-10",
     link: "https://github.com/tc39/proposal-upsert",
   },
   {
@@ -378,6 +415,7 @@ export const standards: StandardDoc[] = [
     category: "Language",
     summary: "여러 이터레이터를 순차적으로 연결하여 하나의 스트림처럼 처리하는 헬퍼 메서드 표준.",
     date: "2025-11-01",
+    createdAt: "2026-04-10",
     link: "https://github.com/tc39/proposal-iterator-sequencing",
   },
   {
@@ -388,6 +426,7 @@ export const standards: StandardDoc[] = [
     category: "Language",
     summary: "JSON.parse 시 원본 소스 텍스트에 접근하여 BigInt 등 정밀도 손실 없이 파싱하는 기능.",
     date: "2025-11-01",
+    createdAt: "2026-04-10",
     link: "https://github.com/tc39/proposal-json-parse-with-source",
   },
   {
@@ -398,6 +437,7 @@ export const standards: StandardDoc[] = [
     category: "Security",
     summary: "Buffer 메모리 누출, symlink 권한 우회, HTTP/2 DoS 등 8개 CVE를 수정한 보안 릴리즈.",
     date: "2026-01-13",
+    createdAt: "2026-04-10",
     link: "https://nodejs.org/en/blog/vulnerability/december-2025-security-releases",
   },
   {
@@ -408,6 +448,7 @@ export const standards: StandardDoc[] = [
     category: "Security",
     summary: "TLS SNICallback 크래시, __proto__ 헤더 DoS, HTTP/2 리소스 고갈 등 8개 CVE 보안 패치.",
     date: "2026-03-24",
+    createdAt: "2026-04-10",
     link: "https://nodejs.org/en/blog/vulnerability/march-2026-security-releases",
   },
   {
@@ -418,6 +459,7 @@ export const standards: StandardDoc[] = [
     category: "Web",
     summary: "차세대 웹 접근성 가이드라인. 새로운 적합성 모델과 테스트 방식으로 WCAG 2.x를 대체.",
     date: "2026-03-03",
+    createdAt: "2026-04-10",
     link: "https://www.w3.org/TR/wcag-3.0/",
   },
 ];
