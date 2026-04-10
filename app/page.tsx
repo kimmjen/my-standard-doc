@@ -2,10 +2,11 @@ import { standards } from "@/data/standards";
 import SearchView from "@/components/search-view";
 
 export default function Home() {
-  const latestDate = standards
-    .map((doc) => doc.date)
-    .sort()
-    .pop();
+  const deployDate = new Date().toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <main className="container mx-auto py-12 px-4 max-w-5xl">
@@ -17,7 +18,7 @@ export default function Home() {
           개발의 근간이 되는 공식 문서들을 기록하고 정리합니다.
         </p>
         <p className="text-sm text-muted-foreground">
-          총 {standards.length}개 문서 | 마지막 업데이트: {latestDate}
+          총 {standards.length}개 문서 | 마지막 배포: {deployDate}
         </p>
       </div>
       <SearchView docs={standards} />
